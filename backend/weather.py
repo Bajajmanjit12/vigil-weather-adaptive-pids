@@ -1,12 +1,35 @@
+import time
 import requests
 
 
-def geocode_location(city):
-    """
-    Convert a city name into latitude and longitude.
-    """
+# =========================================================
+# VIGIL WEATHER CONFIGURATION
+# =========================================================
 
-    url = "https://geocoding-api.open-meteo.com/v1/search"
+OPEN_METEO_URL = "https://api.open-meteo.com/v1/forecast"
+GEOCODING_URL = "https://geocoding-api.open-meteo.com/v1/search"
+
+# Keep weather in memory for 5 minutes.
+# This prevents repeated requests for the same location.
+CACHE_DURATION_SECONDS = 300
+
+_weather_cache = {}
+
+
+# =========================================================
+# COMMON REQUEST SETTINGS
+# =========================================================
+
+HEADERS = {
+    "User-Agent": "VIGIL-Environmental-Decision-Support-System/1.0"
+}
+
+
+# =========================================================
+# LOCATION SEARCH
+# =========================================================
+
+def geocode_location(city):
 
     params = {
         "name": city,
@@ -16,8 +39,9 @@ def geocode_location(city):
     }
 
     response = requests.get(
-        url,
+        GEOCODING_URL,
         params=params,
+        headers=HEADERS,
         timeout=10
     )
 
@@ -40,15 +64,46 @@ def geocode_location(city):
     }
 
 
-def fetch_weather(latitude, longitude):
-    """
-    Fetch live weather and 6-hour forecast.
-    """
+# =========================================================
+# LIVE WEATHER
+# =========================================================
 
-    url = "https://api.open-meteo.com/v1/forecast"
+def fetch_weather(latitude, longitude):
+
+    # Create a cache key using rounded coordinates.
+    cache_key = (
+        round(float(latitude), 3),
+        round(float(longitude), 3)
+    )
+
+    # -----------------------------------------------------
+    # CHECK CACHE
+    # -----------------------------------------------------
+
+    cached = _weather_cache.get(cache_key)
+
+    if cached:
+
+        age = time.time() - cached["timestamp"]
+
+        if age < CACHE_DURATION_SECONDS:
+
+            print(
+                f"Using cached weather data "
+                f"(age: {int(age)} seconds)"
+            )
+
+            return cached["weather"]
+
+
+    # -----------------------------------------------------
+    # OPEN-METEO REQUEST
+    # -----------------------------------------------------
 
     params = {
+
         "latitude": latitude,
+
         "longitude": longitude,
 
         "current": (
@@ -65,56 +120,175 @@ def fetch_weather(latitude, longitude):
         ),
 
         "forecast_days": 1,
+
         "timezone": "auto",
 
         "wind_speed_unit": "kmh",
+
         "precipitation_unit": "mm"
     }
 
-    response = requests.get(
-        url,
-        params=params,
-        timeout=10
-    )
 
-    response.raise_for_status()
+    # -----------------------------------------------------
+    # RETRY LOGIC
+    # -----------------------------------------------------
 
-    data = response.json()
+    max_attempts = 3
 
-    current = data["current"]
-    hourly = data["hourly"]
+    for attempt in range(max_attempts):
 
-    forecast_wind = hourly["wind_speed_10m"][:6]
-    forecast_rain = hourly["precipitation"][:6]
+        try:
 
-    return {
-        "temperature_c": current["temperature_2m"],
-        "humidity_pct": current["relative_humidity_2m"],
-        "rainfall_mm": current["precipitation"],
-        "wind_speed_kmh": current["wind_speed_10m"],
-        "weather_code": current["weather_code"],
+            response = requests.get(
+                OPEN_METEO_URL,
+                params=params,
+                headers=HEADERS,
+                timeout=15
+            )
 
-        "forecast_wind_kmh": max(forecast_wind),
-        "forecast_rain_mm": sum(forecast_rain),
+            # -------------------------------------------------
+            # RATE LIMIT
+            # -------------------------------------------------
 
-        "forecast": {
-            "wind_kmh": forecast_wind,
-            "rain_mm": forecast_rain
-        },
+            if response.status_code == 429:
 
-        "condition": get_weather_condition(
-            current["weather_code"]
-        ),
+                print(
+                    f"Open-Meteo rate limit reached. "
+                    f"Attempt {attempt + 1}/{max_attempts}"
+                )
 
-        "source": "LIVE"
-    }
+                if attempt < max_attempts - 1:
 
+                    # Wait before trying again.
+                    time.sleep(2 ** attempt)
+
+                    continue
+
+                response.raise_for_status()
+
+
+            # -------------------------------------------------
+            # OTHER HTTP ERRORS
+            # -------------------------------------------------
+
+            response.raise_for_status()
+
+            data = response.json()
+
+            # -------------------------------------------------
+            # CURRENT WEATHER
+            # -------------------------------------------------
+
+            current = data["current"]
+
+            hourly = data["hourly"]
+
+            # -------------------------------------------------
+            # NEXT 6 HOURS
+            # -------------------------------------------------
+
+            forecast_wind = hourly["wind_speed_10m"][:6]
+
+            forecast_rain = hourly["precipitation"][:6]
+
+            # Make sure arrays contain values.
+            if not forecast_wind:
+
+                forecast_wind = [current["wind_speed_10m"]]
+
+            if not forecast_rain:
+
+                forecast_rain = [current["precipitation"]]
+
+
+            # -------------------------------------------------
+            # WEATHER OBJECT
+            # -------------------------------------------------
+
+            weather = {
+
+                "temperature_c":
+                    current["temperature_2m"],
+
+                "humidity_pct":
+                    current["relative_humidity_2m"],
+
+                "rainfall_mm":
+                    current["precipitation"],
+
+                "wind_speed_kmh":
+                    current["wind_speed_10m"],
+
+                "weather_code":
+                    current["weather_code"],
+
+                "forecast_wind_kmh":
+                    max(forecast_wind),
+
+                "forecast_rain_mm":
+                    sum(forecast_rain),
+
+                "forecast": {
+
+                    "wind_kmh":
+                        forecast_wind,
+
+                    "rain_mm":
+                        forecast_rain
+                },
+
+                "condition":
+                    get_weather_condition(
+                        current["weather_code"]
+                    ),
+
+                "source":
+                    "LIVE"
+            }
+
+
+            # -------------------------------------------------
+            # SAVE TO CACHE
+            # -------------------------------------------------
+
+            _weather_cache[cache_key] = {
+
+                "timestamp": time.time(),
+
+                "weather": weather
+            }
+
+
+            print(
+                "Live weather successfully fetched "
+                "from Open-Meteo."
+            )
+
+            return weather
+
+
+        except requests.exceptions.RequestException as error:
+
+            print(
+                f"Open-Meteo request failed "
+                f"(attempt {attempt + 1}/{max_attempts}): "
+                f"{error}"
+            )
+
+            if attempt < max_attempts - 1:
+
+                time.sleep(2 ** attempt)
+
+                continue
+
+            raise
+
+
+# =========================================================
+# WEATHER CONDITION
+# =========================================================
 
 def get_weather_condition(code):
-    """
-    Convert Open-Meteo weather code into
-    a human-readable condition.
-    """
 
     if code == 0:
         return "Clear sky"
@@ -146,29 +320,49 @@ def get_weather_condition(code):
     return "Unknown"
 
 
-def mock_weather():
-    """
-    Demo fallback data.
+# =========================================================
+# FALLBACK WEATHER
+# =========================================================
 
-    This is used only when live weather
-    cannot be obtained.
-    """
+def mock_weather():
 
     return {
+
         "temperature_c": 27,
+
         "humidity_pct": 78,
+
         "rainfall_mm": 2.5,
+
         "wind_speed_kmh": 22,
 
         "weather_code": 61,
+
         "condition": "Rain",
 
         "forecast_wind_kmh": 30,
+
         "forecast_rain_mm": 6,
 
         "forecast": {
-            "wind_kmh": [22, 24, 26, 28, 30, 27],
-            "rain_mm": [1, 1, 1, 2, 1, 1]
+
+            "wind_kmh": [
+                22,
+                24,
+                26,
+                28,
+                30,
+                27
+            ],
+
+            "rain_mm": [
+                1,
+                1,
+                1,
+                2,
+                1,
+                1
+            ]
         },
 
         "source": "DEMO / FALLBACK"
