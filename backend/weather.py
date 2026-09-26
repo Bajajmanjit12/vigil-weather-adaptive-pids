@@ -1,3 +1,4 @@
+import os
 import time
 import requests
 
@@ -7,18 +8,14 @@ import requests
 # =========================================================
 
 OPEN_METEO_URL = "https://api.open-meteo.com/v1/forecast"
+
+WEATHERAPI_URL = "https://api.weatherapi.com/v1/forecast.json"
+
 GEOCODING_URL = "https://geocoding-api.open-meteo.com/v1/search"
 
-# Keep weather in memory for 5 minutes.
-# This prevents repeated requests for the same location.
 CACHE_DURATION_SECONDS = 300
 
 _weather_cache = {}
-
-
-# =========================================================
-# COMMON REQUEST SETTINGS
-# =========================================================
 
 HEADERS = {
     "User-Agent": "VIGIL-Environmental-Decision-Support-System/1.0"
@@ -65,12 +62,11 @@ def geocode_location(city):
 
 
 # =========================================================
-# LIVE WEATHER
+# MAIN WEATHER FUNCTION
 # =========================================================
 
 def fetch_weather(latitude, longitude):
 
-    # Create a cache key using rounded coordinates.
     cache_key = (
         round(float(latitude), 3),
         round(float(longitude), 3)
@@ -89,7 +85,7 @@ def fetch_weather(latitude, longitude):
         if age < CACHE_DURATION_SECONDS:
 
             print(
-                f"Using cached weather data "
+                f"Using cached live weather "
                 f"(age: {int(age)} seconds)"
             )
 
@@ -97,8 +93,98 @@ def fetch_weather(latitude, longitude):
 
 
     # -----------------------------------------------------
-    # OPEN-METEO REQUEST
+    # TRY OPEN-METEO FIRST
     # -----------------------------------------------------
+
+    try:
+
+        weather = fetch_open_meteo(
+            latitude,
+            longitude
+        )
+
+        save_weather_cache(
+            cache_key,
+            weather
+        )
+
+        return weather
+
+    except Exception as error:
+
+        print(
+            "Open-Meteo unavailable:",
+            error
+        )
+
+        print(
+            "Trying WeatherAPI backup..."
+        )
+
+
+    # -----------------------------------------------------
+    # TRY WEATHERAPI BACKUP
+    # -----------------------------------------------------
+
+    try:
+
+        weather = fetch_weatherapi(
+            latitude,
+            longitude
+        )
+
+        save_weather_cache(
+            cache_key,
+            weather
+        )
+
+        return weather
+
+    except Exception as error:
+
+        print(
+            "WeatherAPI unavailable:",
+            error
+        )
+
+
+    # -----------------------------------------------------
+    # USE PREVIOUS LIVE DATA IF AVAILABLE
+    # -----------------------------------------------------
+
+    cached = _weather_cache.get(cache_key)
+
+    if cached:
+
+        print(
+            "Using previously cached live weather."
+        )
+
+        weather = dict(cached["weather"])
+
+        weather["source"] = "LIVE / CACHED"
+
+        return weather
+
+
+    # -----------------------------------------------------
+    # EVERYTHING FAILED
+    # -----------------------------------------------------
+
+    print(
+        "No live weather source available."
+    )
+
+    raise Exception(
+        "All live weather providers are unavailable."
+    )
+
+
+# =========================================================
+# OPEN-METEO
+# =========================================================
+
+def fetch_open_meteo(latitude, longitude):
 
     params = {
 
@@ -128,164 +214,254 @@ def fetch_weather(latitude, longitude):
         "precipitation_unit": "mm"
     }
 
+    response = requests.get(
+        OPEN_METEO_URL,
+        params=params,
+        headers=HEADERS,
+        timeout=10
+    )
 
-    # -----------------------------------------------------
-    # RETRY LOGIC
-    # -----------------------------------------------------
+    response.raise_for_status()
 
-    max_attempts = 3
+    data = response.json()
 
-    for attempt in range(max_attempts):
+    current = data["current"]
 
-        try:
+    hourly = data["hourly"]
 
-            response = requests.get(
-                OPEN_METEO_URL,
-                params=params,
-                headers=HEADERS,
-                timeout=15
-            )
+    forecast_wind = hourly[
+        "wind_speed_10m"
+    ][:6]
 
-            # -------------------------------------------------
-            # RATE LIMIT
-            # -------------------------------------------------
+    forecast_rain = hourly[
+        "precipitation"
+    ][:6]
 
-            if response.status_code == 429:
+    if not forecast_wind:
+        forecast_wind = [
+            current["wind_speed_10m"]
+        ]
 
-                print(
-                    f"Open-Meteo rate limit reached. "
-                    f"Attempt {attempt + 1}/{max_attempts}"
-                )
+    if not forecast_rain:
+        forecast_rain = [
+            current["precipitation"]
+        ]
 
-                if attempt < max_attempts - 1:
+    return {
 
-                    # Wait before trying again.
-                    time.sleep(2 ** attempt)
+        "temperature_c":
+            current["temperature_2m"],
 
-                    continue
+        "humidity_pct":
+            current["relative_humidity_2m"],
 
-                response.raise_for_status()
+        "rainfall_mm":
+            current["precipitation"],
 
+        "wind_speed_kmh":
+            current["wind_speed_10m"],
 
-            # -------------------------------------------------
-            # OTHER HTTP ERRORS
-            # -------------------------------------------------
+        "weather_code":
+            current["weather_code"],
 
-            response.raise_for_status()
+        "forecast_wind_kmh":
+            max(forecast_wind),
 
-            data = response.json()
+        "forecast_rain_mm":
+            sum(forecast_rain),
 
-            # -------------------------------------------------
-            # CURRENT WEATHER
-            # -------------------------------------------------
+        "forecast": {
 
-            current = data["current"]
+            "wind_kmh":
+                forecast_wind,
 
-            hourly = data["hourly"]
+            "rain_mm":
+                forecast_rain
+        },
 
-            # -------------------------------------------------
-            # NEXT 6 HOURS
-            # -------------------------------------------------
+        "condition":
+            get_weather_condition(
+                current["weather_code"]
+            ),
 
-            forecast_wind = hourly["wind_speed_10m"][:6]
-
-            forecast_rain = hourly["precipitation"][:6]
-
-            # Make sure arrays contain values.
-            if not forecast_wind:
-
-                forecast_wind = [current["wind_speed_10m"]]
-
-            if not forecast_rain:
-
-                forecast_rain = [current["precipitation"]]
-
-
-            # -------------------------------------------------
-            # WEATHER OBJECT
-            # -------------------------------------------------
-
-            weather = {
-
-                "temperature_c":
-                    current["temperature_2m"],
-
-                "humidity_pct":
-                    current["relative_humidity_2m"],
-
-                "rainfall_mm":
-                    current["precipitation"],
-
-                "wind_speed_kmh":
-                    current["wind_speed_10m"],
-
-                "weather_code":
-                    current["weather_code"],
-
-                "forecast_wind_kmh":
-                    max(forecast_wind),
-
-                "forecast_rain_mm":
-                    sum(forecast_rain),
-
-                "forecast": {
-
-                    "wind_kmh":
-                        forecast_wind,
-
-                    "rain_mm":
-                        forecast_rain
-                },
-
-                "condition":
-                    get_weather_condition(
-                        current["weather_code"]
-                    ),
-
-                "source":
-                    "LIVE"
-            }
-
-
-            # -------------------------------------------------
-            # SAVE TO CACHE
-            # -------------------------------------------------
-
-            _weather_cache[cache_key] = {
-
-                "timestamp": time.time(),
-
-                "weather": weather
-            }
-
-
-            print(
-                "Live weather successfully fetched "
-                "from Open-Meteo."
-            )
-
-            return weather
-
-
-        except requests.exceptions.RequestException as error:
-
-            print(
-                f"Open-Meteo request failed "
-                f"(attempt {attempt + 1}/{max_attempts}): "
-                f"{error}"
-            )
-
-            if attempt < max_attempts - 1:
-
-                time.sleep(2 ** attempt)
-
-                continue
-
-            raise
+        "source":
+            "LIVE - Open-Meteo"
+    }
 
 
 # =========================================================
-# WEATHER CONDITION
+# WEATHERAPI BACKUP
+# =========================================================
+
+def fetch_weatherapi(latitude, longitude):
+
+    api_key = os.getenv(
+        "WEATHERAPI_KEY"
+    )
+
+    if not api_key:
+
+        raise Exception(
+            "WEATHERAPI_KEY environment variable is missing."
+        )
+
+    params = {
+
+        "key": api_key,
+
+        "q": f"{latitude},{longitude}",
+
+        "days": 1,
+
+        "aqi": "no",
+
+        "alerts": "no"
+    }
+
+    response = requests.get(
+        WEATHERAPI_URL,
+        params=params,
+        headers=HEADERS,
+        timeout=10
+    )
+
+    response.raise_for_status()
+
+    data = response.json()
+
+    # -----------------------------------------------------
+    # CHECK API ERROR RESPONSE
+    # -----------------------------------------------------
+
+    if "error" in data:
+
+        raise Exception(
+            data["error"].get(
+                "message",
+                "WeatherAPI returned an error."
+            )
+        )
+
+    current = data["current"]
+
+    forecast_days = data[
+        "forecast"
+    ]["forecastday"]
+
+    hourly = forecast_days[0]["hour"]
+
+    # -----------------------------------------------------
+    # FIND CURRENT + NEXT 5 HOURS
+    # -----------------------------------------------------
+
+    current_epoch = current[
+        "last_updated_epoch"
+    ]
+
+    future_hours = []
+
+    for hour in hourly:
+
+        if hour["time_epoch"] >= current_epoch:
+
+            future_hours.append(hour)
+
+        if len(future_hours) >= 6:
+
+            break
+
+    # Fallback if API does not return enough hours
+    if not future_hours:
+
+        future_hours = hourly[:6]
+
+    forecast_wind = [
+        hour["wind_kph"]
+        for hour in future_hours
+    ]
+
+    forecast_rain = [
+        hour["precip_mm"]
+        for hour in future_hours
+    ]
+
+    # -----------------------------------------------------
+    # WEATHER CODE
+    # -----------------------------------------------------
+
+    weather_code = get_weatherapi_code(
+        current["condition"]["text"]
+    )
+
+    return {
+
+        "temperature_c":
+            current["temp_c"],
+
+        "humidity_pct":
+            current["humidity"],
+
+        "rainfall_mm":
+            current["precip_mm"],
+
+        "wind_speed_kmh":
+            current["wind_kph"],
+
+        "weather_code":
+            weather_code,
+
+        "forecast_wind_kmh":
+            max(forecast_wind)
+            if forecast_wind
+            else current["wind_kph"],
+
+        "forecast_rain_mm":
+            sum(forecast_rain)
+            if forecast_rain
+            else current["precip_mm"],
+
+        "forecast": {
+
+            "wind_kmh":
+                forecast_wind,
+
+            "rain_mm":
+                forecast_rain
+        },
+
+        "condition":
+            current["condition"]["text"],
+
+        "source":
+            "LIVE - WeatherAPI"
+    }
+
+
+# =========================================================
+# SAVE CACHE
+# =========================================================
+
+def save_weather_cache(
+    cache_key,
+    weather
+):
+
+    _weather_cache[cache_key] = {
+
+        "timestamp":
+            time.time(),
+
+        "weather":
+            weather
+    }
+
+    print(
+        f"Weather cached from {weather['source']}."
+    )
+
+
+# =========================================================
+# OPEN-METEO WEATHER CONDITIONS
 # =========================================================
 
 def get_weather_condition(code):
@@ -321,7 +497,42 @@ def get_weather_condition(code):
 
 
 # =========================================================
-# FALLBACK WEATHER
+# WEATHERAPI CONDITION → INTERNAL CODE
+# =========================================================
+
+def get_weatherapi_code(condition):
+
+    text = condition.lower()
+
+    if "thunder" in text:
+        return 95
+
+    if "snow" in text:
+        return 71
+
+    if "rain" in text:
+        return 63
+
+    if "drizzle" in text:
+        return 53
+
+    if "fog" in text or "mist" in text:
+        return 45
+
+    if "cloud" in text:
+        return 2
+
+    if "overcast" in text:
+        return 3
+
+    if "clear" in text or "sunny" in text:
+        return 0
+
+    return 3
+
+
+# =========================================================
+# DEMO FALLBACK
 # =========================================================
 
 def mock_weather():
@@ -365,5 +576,6 @@ def mock_weather():
             ]
         },
 
-        "source": "DEMO / FALLBACK"
+        "source":
+            "DEMO / FALLBACK"
     }
