@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>VIGIL — ROI & Impact</title>
+
+    <link rel="stylesheet" href="roi-impact.css">
+</head>
+
+<body>
+
+    <main class="roi-page">
+
+        <!-- PAGE HEADER -->
+        <section class="roi-header">
+
+            <div>
+                <div class="eyebrow">
+                    VIGIL · IMPACT ANALYTICS
+                </div>
+
+                <h1>ROI & Impact</h1>
+
+                <p>
+                    Measuring the operational impact of weather-aware
+                    dynamic perimeter calibration.
+                </p>
+            </div>
+
+            <div class="status-pill">
+                <span class="status-dot"></span>
+                Simulation Connected
+            </div>
+
+        </section>
+
+
+        <!-- SUMMARY -->
+        <section class="section">
+
+            <div class="section-heading">
+                <div>
+                    <div class="eyebrow">IMPACT SUMMARY</div>
+                    <h2>Dynamic Calibration Impact</h2>
+                </div>
+
+                <div class="data-source">
+                    Source: VIGIL simulation
+                </div>
+            </div>
+
+
+            <div class="metric-grid">
+
+                <!-- SAMPLE SIZE -->
+                <article class="metric-card">
+
+                    <div class="metric-label">
+                        SAMPLE SIZE
+                    </div>
+
+                    <div
+                        class="metric-value"
+                        id="roi-sample-size">
+                        —
+                    </div>
+
+                    <div class="metric-description">
+                        Historical decision records evaluated
+                    </div>
+
+                </article>
+
+
+                <!-- STATIC -->
+                <article class="metric-card">
+
+                    <div class="metric-label">
+                        STATIC POLICY
+                    </div>
+
+                    <div
+                        class="metric-value"
+                        id="roi-static-alarms">
+                        —
+                    </div>
+
+                    <div class="metric-description">
+                        Estimated baseline alarms
+                    </div>
+
+                </article>
+
+
+                <!-- DYNAMIC -->
+                <article class="metric-card">
+
+                    <div class="metric-label">
+                        DYNAMIC POLICY
+                    </div>
+
+                    <div
+                        class="metric-value"
+                        id="roi-dynamic-alarms">
+                        —
+                    </div>
+
+                    <div class="metric-description">
+                        VIGIL dynamic-policy alarms
+                    </div>
+
+                </article>
+
+
+                <!-- REDUCTION -->
+                <article class="metric-card highlight">
+
+                    <div class="metric-label">
+                        ESTIMATED REDUCTION
+                    </div>
+
+                    <div
+                        class="metric-value reduction"
+                        id="roi-reduction">
+                        —%
+                    </div>
+
+                    <div class="metric-description">
+                        Estimated false-alarm reduction
+                    </div>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+        <!-- COMPARISON -->
+        <section class="section">
+
+            <div class="section-heading">
+
+                <div>
+                    <div class="eyebrow">
+                        POLICY COMPARISON
+                    </div>
+
+                    <h2>
+                        Static vs Dynamic Calibration
+                    </h2>
+                </div>
+
+            </div>
+
+
+            <div class="comparison-card">
+
+                <!-- STATIC -->
+                <div class="comparison-row">
+
+                    <div class="comparison-info">
+
+                        <div class="comparison-title">
+                            Static High-Sensitivity Policy
+                        </div>
+
+                        <div class="comparison-description">
+                            Baseline policy used for comparison.
+                        </div>
+
+                    </div>
+
+                    <div class="comparison-number">
+                        <span id="compare-static">—</span>
+                        <small>alarms</small>
+                    </div>
+
+                </div>
+
+
+                <div class="comparison-bar">
+
+                    <div
+                        class="comparison-fill static-fill"
+                        id="static-bar">
+                    </div>
+
+                </div>
+
+
+                <!-- DYNAMIC -->
+                <div class="comparison-row dynamic-row">
+
+                    <div class="comparison-info">
+
+                        <div class="comparison-title">
+                            VIGIL Dynamic Policy
+                        </div>
+
+                        <div class="comparison-description">
+                            Weather-aware recommendation based on
+                            environmental conditions.
+                        </div>
+
+                    </div>
+
+                    <div class="comparison-number">
+                        <span id="compare-dynamic">—</span>
+                        <small>alarms</small>
+                    </div>
+
+                </div>
+
+
+                <div class="comparison-bar">
+
+                    <div
+                        class="comparison-fill dynamic-fill"
+                        id="dynamic-bar">
+                    </div>
+
+                </div>
+
+
+                <!-- REDUCTION -->
+                <div class="impact-result">
+
+                    <div class="impact-result-label">
+                        POTENTIAL OPERATIONAL IMPACT
+                    </div>
+
+                    <div class="impact-result-value">
+                        <span id="impact-reduction">—%</span>
+                    </div>
+
+                    <p>
+                        Estimated reduction in false alarms compared
+                        with the static high-sensitivity baseline.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- METHODOLOGY -->
+        <section class="section">
+
+            <div class="section-heading">
+
+                <div>
+                    <div class="eyebrow">
+                        METHODOLOGY
+                    </div>
+
+                    <h2>
+                        How VIGIL Estimates Impact
+                    </h2>
+                </div>
+
+            </div>
+
+
+            <div class="method-grid">
+
+                <article class="method-card">
+
+                    <div class="method-number">
+                        01
+                    </div>
+
+                    <h3>
+                        Historical Readings
+                    </h3>
+
+                    <p>
+                        VIGIL evaluates the environmental readings
+                        recorded in its decision history.
+                    </p>
+
+                </article>
+
+
+                <article class="method-card">
+
+                    <div class="method-number">
+                        02
+                    </div>
+
+                    <h3>
+                        Static Baseline
+                    </h3>
+
+                    <p>
+                        The baseline considers a high-sensitivity
+                        policy where disruptive weather conditions
+                        can generate alarms.
+                    </p>
+
+                </article>
+
+
+                <article class="method-card">
+
+                    <div class="method-number">
+                        03
+                    </div>
+
+                    <h3>
+                        Dynamic Recommendation
+                    </h3>
+
+                    <p>
+                        VIGIL compares the baseline against its
+                        weather-aware dynamic sensitivity
+                        recommendation.
+                    </p>
+
+                </article>
+
+
+                <article class="method-card">
+
+                    <div class="method-number">
+                        04
+                    </div>
+
+                    <h3>
+                        Impact Estimate
+                    </h3>
+
+                    <p>
+                        The difference between the two policies is
+                        converted into an estimated false-alarm
+                        reduction percentage.
+                    </p>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+        <!-- FORMULA -->
+        <section class="section">
+
+            <div class="formula-card">
+
+                <div class="eyebrow">
+                    IMPACT CALCULATION
+                </div>
+
+                <h2>
+                    Estimated False-Alarm Reduction
+                </h2>
+
+                <div class="formula">
+
+                    <span>
+                        Static Alarms − Dynamic Alarms
+                    </span>
+
+                    <span class="divider">
+                        ÷
+                    </span>
+
+                    <span>
+                        Static Alarms
+                    </span>
+
+                    <span class="multiply">
+                        × 100
+                    </span>
+
+                </div>
+
+                <p>
+                    This is an illustrative simulation metric based on
+                    the available VIGIL decision history. It should not
+                    be interpreted as a certified field-performance
+                    measurement.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- LIMITATION -->
+        <section class="notice-card">
+
+            <div class="notice-icon">
+                i
+            </div>
+
+            <div>
+
+                <strong>
+                    Interpretation note
+                </strong>
+
+                <p>
+                    The current backend calculates an estimated
+                    false-alarm reduction from recorded readings.
+                    Financial savings, manpower savings, maintenance
+                    costs, and payback period are not currently
+                    calculated by VIGIL.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- FOOTER -->
+        <footer class="roi-footer">
+
+            <span>
+                VIGIL · Weather-Aware Adaptive Calibration
+            </span>
+
+            <span id="roi-updated">
+                Data status: —
+            </span>
+
+        </footer>
+
+    </main>
+
+
+    <script src="roi-impact.js"></script>
+
+</body>
+</html>

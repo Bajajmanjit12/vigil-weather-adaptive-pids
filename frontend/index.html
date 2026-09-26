@@ -1,0 +1,1472 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>VIGIL — Perimeter Intelligence</title>
+
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+
+<body data-theme="dark">
+
+    <div class="app-shell">
+
+        <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+        <aside class="sidebar" id="sidebar">
+
+            <div class="sidebar-brand">
+
+                <div class="brand-mark">
+                    V
+                </div>
+
+                <div class="brand-text">
+                    <h1>VIGIL</h1>
+                    <p>Weather Adaptive PIDS</p>
+                </div>
+
+            </div>
+
+
+            <nav class="sidebar-nav">
+
+                <button class="tab-btn active" data-tab="overview">
+                    <span class="nav-number">01</span>
+                    <span class="nav-label">Overview</span>
+                </button>
+
+
+                <button class="tab-btn" data-tab="environment">
+                    <span class="nav-number">02</span>
+                    <span class="nav-label">Live Weather</span>
+                </button>
+
+
+                <button class="tab-btn" data-tab="recommendation">
+                    <span class="nav-number">03</span>
+                    <span class="nav-label">Recommendation</span>
+                </button>
+
+
+                <button class="tab-btn" data-tab="risk">
+                    <span class="nav-number">04</span>
+                    <span class="nav-label">Risk &amp; Confidence</span>
+                </button>
+
+
+                <button class="tab-btn" data-tab="operations">
+                    <span class="nav-number">05</span>
+                    <span class="nav-label">Perimeter Zones</span>
+                </button>
+
+
+                <button class="tab-btn" data-tab="history">
+                    <span class="nav-number">06</span>
+                    <span class="nav-label">History</span>
+                </button>
+
+
+                <button class="tab-btn" data-tab="roi">
+                    <span class="nav-number">07</span>
+                    <span class="nav-label">ROI &amp; Impact</span>
+                </button>
+
+            </nav>
+
+
+            <div class="sidebar-status">
+
+                <div class="sidebar-status-row">
+
+                    <span class="status-dot"></span>
+
+                    <div>
+                        <strong>System Operational</strong>
+                        <span>Environmental monitoring active</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </aside>
+
+
+        <!-- =====================================================
+         MOBILE MENU
+    ====================================================== -->
+
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+
+        <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
+        <main>
+
+            <!-- =================================================
+             TOPBAR
+        ================================================== -->
+
+            <header class="topbar">
+
+                <div class="topbar-title">
+
+                    <span class="topbar-eyebrow">
+                        VIGIL / PERIMETER INTELLIGENCE
+                    </span>
+
+                    <h2 id="pageTitle">
+                        Overview
+                    </h2>
+
+                </div>
+
+
+                <div class="topbar-right">
+
+                    <div class="live-status">
+
+                        <span class="status-dot"></span>
+
+                        <span id="systemStatus">
+                            System Operational
+                        </span>
+
+                    </div>
+
+
+                    <button class="refresh-btn" id="refreshBtn">
+                        Refresh
+                    </button>
+
+                </div>
+
+            </header>
+
+
+            <!-- =================================================
+             CONTROL STRIP
+        ================================================== -->
+
+            <section class="control-strip">
+
+                <div class="location-control">
+
+                    <label for="locationInput">
+                        Monitoring Location
+                    </label>
+
+                    <div class="location-input-group">
+
+                        <input type="text" id="locationInput" value="Pune" placeholder="Enter city">
+
+                        <button id="updateLocationBtn">
+                            Update
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="topbar-toggles">
+
+                    <select id="languageSelect">
+                        <option value="en">English</option>
+                        <option value="hi">हिन्दी</option>
+                        <option value="mr">मराठी</option>
+                        <option value="es">Español</option>
+                        <option value="fr">Français</option>
+                    </select>
+
+
+                    <button class="theme-toggle" id="themeToggle">
+                        Theme
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+             DASHBOARD
+        ================================================== -->
+
+            <div class="dashboard">
+
+
+                <!-- =================================================
+                 GLOBAL STATUS
+            ================================================== -->
+
+                <div class="status-bar">
+
+                    <div>
+                        <span class="status-dot"></span>
+
+                        Location:
+                        <strong id="locationName">
+                            Pune, India
+                        </strong>
+                    </div>
+
+
+                    <div>
+                        Last updated:
+                        <strong id="lastUpdated">
+                            --
+                        </strong>
+                    </div>
+
+                </div>
+
+
+
+                <!-- =====================================================
+     01 — OPERATOR OVERVIEW
+====================================================== -->
+
+                <section class="tab-panel active" data-tab-panel="overview">
+
+                    <!-- Page heading -->
+                    <div class="page-intro operator-intro">
+                        <p class="eyebrow">01 / OVERVIEW</p>
+
+                        <h1>
+                            Weather-Aware Adaptive Calibration for Perimeter
+                            Intrusion Detection
+                        </h1>
+
+                        <p>
+                            VIGIL converts changing environmental conditions into
+                            explainable sensor-calibration recommendations for
+                            outdoor perimeter intrusion detection systems.
+                        </p>
+                    </div>
+
+                    <!-- Current condition, temperature, wind, risk -->
+                    <div class="operator-metrics">
+
+                        <!-- Weather illustration -->
+                        <div class="operator-weather-card">
+                            <div class="operator-weather-top">
+                                <span class="operator-small-label">
+                                    CURRENT CONDITION
+                                </span>
+                                <span class="operator-weather-live">
+                                    <i></i> LIVE
+                                </span>
+                            </div>
+
+                            <div class="operator-weather-content">
+                                <div>
+                                    <h2 id="condition">--</h2>
+                                    <p id="overviewWeatherCaption">
+                                        Environmental conditions
+                                    </p>
+                                </div>
+
+                                <!-- JS changes the illustration based on weather -->
+                                <div class="weather-illustration weather-drizzle" id="overviewWeatherIllustration"
+                                    aria-label="Current weather illustration">
+
+                                    <svg viewBox="0 0 150 110" class="weather-svg" aria-hidden="true">
+
+                                        <defs>
+                                            <linearGradient id="cloudGradient" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="0%" stop-color="#f4fbff" />
+                                                <stop offset="100%" stop-color="#8da9c0" />
+                                            </linearGradient>
+                                        </defs>
+
+                                        <circle class="weather-sun" cx="104" cy="34" r="20" fill="#ffc857" />
+
+                                        <g class="weather-cloud">
+                                            <path d="M35 72
+                                     C18 72 12 61 17 49
+                                     C21 37 34 34 45 39
+                                     C52 19 76 15 91 29
+                                     C99 36 102 44 101 50
+                                     C117 48 130 58 129 69
+                                     C128 80 119 84 108 84
+                                     H37 Z" fill="url(#cloudGradient)" />
+                                        </g>
+
+                                        <g class="weather-rain">
+                                            <path d="M43 91 l-6 12" />
+                                            <path d="M67 91 l-6 12" />
+                                            <path d="M91 91 l-6 12" />
+                                            <path d="M115 91 l-6 12" />
+                                        </g>
+
+                                        <g class="weather-snow">
+                                            <circle cx="44" cy="98" r="3" />
+                                            <circle cx="70" cy="102" r="3" />
+                                            <circle cx="97" cy="98" r="3" />
+                                            <circle cx="119" cy="102" r="3" />
+                                        </g>
+
+                                        <g class="weather-lightning">
+                                            <path d="M77 82 L62 102 H76 L70 117 L95 91 H81 L87 82 Z" fill="#ffe16b" />
+                                        </g>
+
+                                        <g class="weather-wind-lines">
+                                            <path d="M10 48 H40" />
+                                            <path d="M2 60 H32" />
+                                            <path d="M16 72 H44" />
+                                        </g>
+
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <div class="operator-weather-footer">
+                                <span>Weather-aware monitoring</span>
+                                <span id="overviewWeatherState">Monitoring</span>
+                            </div>
+                        </div>
+
+                        <!-- Temperature -->
+                        <div class="operator-stat-card">
+                            <div class="operator-stat-head">
+                                <span class="operator-small-label">TEMPERATURE</span>
+                                <span class="operator-stat-icon">℃</span>
+                            </div>
+
+                            <div class="operator-stat-value">
+                                <strong id="temperature">--</strong>
+                                <span>°C</span>
+                            </div>
+
+                            <div class="operator-stat-bottom">
+                                <span>Ambient temperature</span>
+                                <span class="operator-stat-mark temperature-mark"></span>
+                            </div>
+                        </div>
+
+                        <!-- Wind -->
+                        <div class="operator-stat-card">
+                            <div class="operator-stat-head">
+                                <span class="operator-small-label">WIND SPEED</span>
+
+                                <svg class="mini-line-icon" viewBox="0 0 30 24" aria-hidden="true">
+                                    <path d="M3 7 H25 M3 12 H19 M3 17 H23" fill="none" stroke="currentColor"
+                                        stroke-width="1.8" stroke-linecap="round" />
+                                </svg>
+                            </div>
+
+                            <div class="operator-stat-value">
+                                <strong id="wind">--</strong>
+                                <span>km/h</span>
+                            </div>
+
+                            <div class="operator-stat-bottom">
+                                <span>Current wind speed</span>
+                                <span class="operator-stat-mark wind-mark"></span>
+                            </div>
+                        </div>
+
+                        <!-- Risk gauge -->
+                        <div class="operator-stat-card operator-risk-stat">
+                            <div class="operator-stat-head">
+                                <span class="operator-small-label">ENVIRONMENTAL RISK</span>
+                            </div>
+
+                            <div class="operator-gauge-wrap">
+                                <div class="operator-gauge" id="overviewRiskGauge" style="--risk-angle: 18deg;">
+
+                                    <div class="operator-gauge-inner">
+                                        <strong id="riskScoreOverview">--</strong>
+                                        <span>/100</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="operator-risk-scale">
+                                <span>Low</span>
+                                <span>Moderate</span>
+                                <span>High</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Recommendation and operating state -->
+                    <div class="operator-decision-grid">
+
+                        <!-- Adaptive recommendation -->
+                        <div class="panel operator-decision-panel">
+
+                            <div class="operator-panel-header">
+                                <div>
+                                    <p class="eyebrow">CURRENT DECISION</p>
+                                    <h2>Adaptive Sensitivity</h2>
+                                </div>
+
+                                <span class="operator-decision-badge" id="overviewDecisionBadge">
+                                    AI DECISION
+                                </span>
+                            </div>
+
+                            <div class="operator-recommendation-content">
+
+                                <div class="operator-recommendation-main">
+                                    <span class="operator-small-label">
+                                        RECOMMENDED SENSITIVITY
+                                    </span>
+
+                                    <h2 id="recommendationOverview" data-level="">
+                                        --
+                                    </h2>
+
+                                    <p id="riskSummaryOverview" class="panel-description">
+                                        Waiting for environmental assessment.
+                                    </p>
+                                </div>
+
+                                <div class="operator-recommendation-side">
+                                    <span class="operator-small-label">
+                                        ENVIRONMENTAL RISK
+                                    </span>
+
+                                    <div class="operator-risk-progress">
+                                        <div class="operator-risk-progress-fill" id="riskBarFillOverview">
+                                        </div>
+                                    </div>
+
+                                    <div class="operator-risk-progress-labels">
+                                        <span>0</span>
+                                        <span>100</span>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="operator-decision-footer">
+                                <div>
+                                    <span class="operator-status-pulse"></span>
+                                    <span>Recommendation generated from weather conditions</span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Perimeter operating state -->
+                        <div class="panel operator-control-panel">
+
+                            <div class="operator-panel-header">
+                                <div>
+                                    <p class="eyebrow">OPERATING STATE</p>
+                                    <h2>Perimeter Control</h2>
+                                </div>
+
+                                <span class="operator-control-indicator">
+                                    <i></i> SYSTEM
+                                </span>
+                            </div>
+
+                            <div class="operator-status-list">
+
+                                <div class="operator-status-row">
+                                    <div>
+                                        <span class="operator-status-icon">01</span>
+                                        <span>Active Sensitivity</span>
+                                    </div>
+
+                                    <strong id="activeSensitivityOverview">
+                                        --
+                                    </strong>
+                                </div>
+
+                                <div class="operator-status-row">
+                                    <div>
+                                        <span class="operator-status-icon">02</span>
+                                        <span>Recommended</span>
+                                    </div>
+
+                                    <strong id="recommendedSensitivityOverview">
+                                        --
+                                    </strong>
+                                </div>
+
+                                <div class="operator-status-row">
+                                    <div>
+                                        <span class="operator-status-icon">03</span>
+                                        <span>Operating Status</span>
+                                    </div>
+
+                                    <strong id="operatingStatusOverview">
+                                        --
+                                    </strong>
+                                </div>
+
+                            </div>
+
+                            <button class="apply-btn wide-btn operator-apply-btn" id="applyRecommendationBtnOverview">
+                                Apply Recommendation
+                                <span>→</span>
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Decision engines -->
+                    <section class="decision-engines operator-engines">
+
+                        <div class="section-title">
+                            <div>
+                                <p class="eyebrow">INTELLIGENCE LAYER</p>
+                                <h2>Decision Engines</h2>
+                            </div>
+
+                            <span class="operator-engine-legend">
+                                <i></i> Rule + ML
+                            </span>
+                        </div>
+
+                        <div class="engine-grid">
+
+                            <!-- Rule engine -->
+                            <div class="engine-card operator-engine-card">
+
+                                <div class="engine-header">
+                                    <span>RULE ENGINE</span>
+                                    <span class="engine-status">ACTIVE</span>
+                                </div>
+
+                                <div class="operator-engine-value">
+                                    <strong id="ruleRecommendation">--</strong>
+
+                                    <svg viewBox="0 0 100 35" class="operator-sparkline" aria-hidden="true">
+                                        <path d="M2 25 L25 23 L44 13 L65 20 L83 8 L98 13" fill="none"
+                                            stroke="currentColor" stroke-width="2" />
+                                    </svg>
+                                </div>
+
+                                <p>
+                                    Deterministic environmental calibration logic.
+                                </p>
+
+                                <div class="operator-engine-bottom">
+                                    <span>Rule-based analysis</span>
+                                    <span class="operator-engine-dot"></span>
+                                </div>
+
+                            </div>
+
+                            <!-- Machine learning -->
+                            <div class="engine-card operator-engine-card">
+
+                                <div class="engine-header">
+                                    <span>MACHINE LEARNING</span>
+                                    <span class="engine-status">ACTIVE</span>
+                                </div>
+
+                                <div class="operator-engine-value">
+                                    <strong id="mlRecommendation">--</strong>
+
+                                    <svg viewBox="0 0 100 35" class="operator-sparkline" aria-hidden="true">
+                                        <path d="M2 27 L23 23 L40 14 L60 19 L80 10 L98 15" fill="none"
+                                            stroke="currentColor" stroke-width="2" />
+                                    </svg>
+                                </div>
+
+                                <div class="confidence-line">
+                                    <span>Confidence</span>
+                                    <strong id="mlConfidence">--</strong>
+                                </div>
+
+                                <p>
+                                    Random Forest based recommendation support.
+                                </p>
+
+                                <div class="operator-engine-bottom">
+                                    <span>ML model analysis</span>
+                                    <span class="operator-engine-dot"></span>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+                </section>
+
+
+                <!-- =================================================
+                 02 — LIVE WEATHER
+            ================================================== -->
+
+                <section class="tab-panel" data-tab-panel="environment">
+
+                    <div class="page-intro">
+
+                        <p class="eyebrow">
+                            02 / LIVE WEATHER
+                        </p>
+
+                        <h1>
+                            Environmental Conditions
+                        </h1>
+
+                        <p>
+                            Current weather conditions and short-term
+                            forecast used by the VIGIL decision engine.
+                        </p>
+
+                    </div>
+
+
+                    <section class="weather-section">
+
+                        <div class="section-title">
+
+                            <h2>
+                                Current Conditions
+                            </h2>
+
+                            <span id="weatherSource">
+                                --
+                            </span>
+
+                        </div>
+
+
+                        <div class="weather-grid">
+
+                            <div class="weather-card">
+
+                                <p>
+                                    Temperature
+                                </p>
+
+                                <h3>
+                                    <span id="temperatureWeather">
+                                        --
+                                    </span>
+                                    °C
+                                </h3>
+
+                            </div>
+
+
+                            <div class="weather-card">
+
+                                <p>
+                                    Wind Speed
+                                </p>
+
+                                <h3>
+                                    <span id="windWeather">
+                                        --
+                                    </span>
+                                    km/h
+                                </h3>
+
+                            </div>
+
+
+                            <div class="weather-card">
+
+                                <p>
+                                    Rainfall
+                                </p>
+
+                                <h3>
+                                    <span id="rainfallWeather">
+                                        --
+                                    </span>
+                                    mm
+                                </h3>
+
+                            </div>
+
+
+                            <div class="weather-card">
+
+                                <p>
+                                    Humidity
+                                </p>
+
+                                <h3>
+                                    <span id="humidityWeather">
+                                        --
+                                    </span>
+                                    %
+                                </h3>
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- Forecast Graph -->
+
+                    <section class="forecast-section">
+
+                        <div class="section-title">
+
+                            <h2>
+                                Short-Term Forecast
+                            </h2>
+
+                            <span>
+                                Environmental Trend
+                            </span>
+
+                        </div>
+
+
+                        <div class="forecast-graph-card">
+
+                            <svg id="forecastGraph" class="forecast-graph" viewBox="0 0 900 220"
+                                preserveAspectRatio="none">
+
+                                <defs>
+
+                                    <linearGradient id="windGradient" x1="0" y1="0" x2="0" y2="1">
+
+                                        <stop offset="0%" stop-color="#63b6e8" stop-opacity="0.35" />
+
+                                        <stop offset="100%" stop-color="#63b6e8" stop-opacity="0" />
+
+                                    </linearGradient>
+
+                                </defs>
+
+                                <g id="forecastGraphContent"></g>
+
+                            </svg>
+
+
+                            <div class="forecast-legend">
+
+                                <span class="legend-item">
+
+                                    <span class="legend-dot legend-wind"></span>
+
+                                    Wind
+
+                                </span>
+
+
+                                <span class="legend-item">
+
+                                    <span class="legend-dot legend-rain"></span>
+
+                                    Rainfall
+
+                                </span>
+
+                            </div>
+
+
+                            <p class="forecast-hint">
+                                Environmental forecast used to support
+                                short-term sensitivity decisions.
+                            </p>
+
+                        </div>
+
+
+                        <div id="forecastContainer" class="forecast-grid"></div>
+
+                    </section>
+
+                </section>
+
+
+                <!-- =================================================
+                 03 — RECOMMENDATION
+            ================================================== -->
+
+                <section class="tab-panel" data-tab-panel="recommendation">
+
+                    <div class="page-intro">
+
+                        <p class="eyebrow">
+                            03 / RECOMMENDATION
+                        </p>
+
+                        <h1>
+                            Adaptive Calibration Recommendation
+                        </h1>
+
+                        <p>
+                            VIGIL combines environmental risk,
+                            rule-based reasoning and machine-learning
+                            support to recommend sensor sensitivity.
+                        </p>
+
+                    </div>
+
+
+                    <div class="two-column-grid">
+
+                        <div class="panel recommendation-panel">
+
+                            <p class="eyebrow">
+                                RECOMMENDED SENSITIVITY
+                            </p>
+
+                            <h2 id="recommendationRecommendation">
+                                --
+                            </h2>
+
+                            <p id="riskSummaryRecommendation" class="panel-description">
+                                --
+                            </p>
+
+
+                            <div class="risk-card">
+
+                                <span class="risk-label">
+                                    Environmental Risk
+                                </span>
+
+                                <div class="risk-value">
+
+                                    <span id="riskScoreRecommendation">
+                                        --
+                                    </span>
+
+                                    <span>/100</span>
+
+                                </div>
+
+
+                                <div class="risk-bar">
+
+                                    <div id="riskBarFillRecommendation" class="risk-bar-fill"></div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="panel">
+
+                            <div class="section-head">
+
+                                <div>
+
+                                    <p class="eyebrow">
+                                        EVIDENCE
+                                    </p>
+
+                                    <h2>
+                                        Decision Evidence
+                                    </h2>
+
+                                </div>
+
+                            </div>
+
+
+                            <div id="evidenceContainer" class="evidence-card">
+
+                                <p id="recommendationEvidence">
+                                    Waiting for evidence.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =================================================
+                 04 — RISK & CONFIDENCE
+            ================================================== -->
+
+                <section class="tab-panel" data-tab-panel="risk">
+
+                    <div class="page-intro">
+
+                        <p class="eyebrow">
+                            04 / RISK &amp; CONFIDENCE
+                        </p>
+
+                        <h1>
+                            Environmental Risk Assessment
+                        </h1>
+
+                        <p>
+                            Risk scoring and confidence values supporting
+                            the VIGIL calibration decision.
+                        </p>
+
+                    </div>
+
+
+                    <div class="metric-grid">
+
+                        <div class="metric-card">
+
+                            <div class="metric-label">
+                                RISK SCORE
+                            </div>
+
+                            <div class="metric-value">
+
+                                <strong id="riskScoreRiskTab">
+                                    --
+                                </strong>
+
+                                <span>/100</span>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="metric-card">
+
+                            <div class="metric-label">
+                                RECOMMENDATION
+                            </div>
+
+                            <div class="metric-value">
+
+                                <strong id="riskRecommendation">
+                                    --
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="metric-card">
+
+                            <div class="metric-label">
+                                ML CONFIDENCE
+                            </div>
+
+                            <div class="metric-value">
+
+                                <strong id="riskConfidence">
+                                    --
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="metric-card">
+
+                            <div class="metric-label">
+                                WEATHER SOURCE
+                            </div>
+
+                            <div class="metric-value">
+
+                                <strong id="riskWeatherSource">
+                                    --
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="engine-grid">
+
+                        <div class="engine-card">
+
+                            <div class="engine-header">
+
+                                <span>
+                                    RULE ENGINE
+                                </span>
+
+                                <span class="engine-status">
+                                    ACTIVE
+                                </span>
+
+                            </div>
+
+                            <strong id="riskRuleRecommendation">
+                                --
+                            </strong>
+
+                            <p>
+                                Rule-based environmental
+                                sensitivity recommendation.
+                            </p>
+
+                        </div>
+
+
+                        <div class="engine-card">
+
+                            <div class="engine-header">
+
+                                <span>
+                                    ML ENGINE
+                                </span>
+
+                                <span class="engine-status">
+                                    ACTIVE
+                                </span>
+
+                            </div>
+
+                            <strong id="riskMlRecommendation">
+                                --
+                            </strong>
+
+                            <div class="confidence-line">
+
+                                <span>
+                                    Confidence
+                                </span>
+
+                                <strong id="riskMlConfidence">
+                                    --
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =================================================
+                 05 — PERIMETER ZONES
+            ================================================== -->
+
+                <section class="tab-panel" data-tab-panel="operations">
+
+                    <div class="page-intro">
+
+                        <p class="eyebrow">
+                            05 / PERIMETER ZONES
+                        </p>
+
+                        <h1>
+                            Perimeter Operating Zones
+                        </h1>
+
+                        <p>
+                            Zone-level view of the current environmental
+                            calibration state.
+                        </p>
+
+                    </div>
+
+
+                    <section class="operating-section">
+
+                        <div class="section-title">
+
+                            <h2>
+                                Current Calibration
+                            </h2>
+
+                            <span>
+                                VIGIL Decision
+                            </span>
+
+                        </div>
+
+
+                        <div class="operating-grid">
+
+                            <div class="operating-card">
+
+                                <span>
+                                    Active Sensitivity
+                                </span>
+
+                                <strong id="activeSensitivityZones">
+                                    --
+                                </strong>
+
+                            </div>
+
+
+                            <div class="operating-card">
+
+                                <span>
+                                    Recommended Sensitivity
+                                </span>
+
+                                <strong id="recommendedSensitivityZones">
+                                    --
+                                </strong>
+
+                            </div>
+
+
+                            <div class="operating-card">
+
+                                <span>
+                                    Operating Status
+                                </span>
+
+                                <strong id="operatingStatusZones">
+                                    --
+                                </strong>
+
+                            </div>
+
+
+                            <button class="apply-btn" id="applyRecommendationBtnZones">
+                                Apply Recommendation
+                            </button>
+
+                        </div>
+
+                    </section>
+
+
+                    <section class="zones-section">
+
+                        <div class="section-title">
+
+                            <h2>
+                                Perimeter Zones
+                            </h2>
+
+                            <span>
+                                4 monitored zones
+                            </span>
+
+                        </div>
+
+
+                        <div id="zonesContainer" class="zones-grid"></div>
+
+                    </section>
+
+                </section>
+
+
+                <!-- =================================================
+                 06 — HISTORY
+            ================================================== -->
+
+                <section class="tab-panel" data-tab-panel="history">
+
+                    <div class="page-intro">
+
+                        <p class="eyebrow">
+                            06 / HISTORY
+                        </p>
+
+                        <h1>
+                            Decision History
+                        </h1>
+
+                        <p>
+                            Historical environmental assessments and
+                            calibration recommendations.
+                        </p>
+
+                    </div>
+
+
+                    <section class="history-section">
+
+                        <div class="section-title">
+
+                            <h2>
+                                Historical Decisions
+                            </h2>
+
+                            <div class="history-actions">
+
+                                <button class="primary-btn" id="downloadHistoryBtn">
+                                    Download History Report
+                                </button>
+
+                                <button class="danger-btn" id="clearHistoryBtn">
+                                    Clear All History
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="history-controls">
+
+                            <input type="text" id="historySearch" placeholder="Search history...">
+
+
+                            <select id="historyFilter">
+
+                                <option value="all">
+                                    All Recommendations
+                                </option>
+
+                                <option value="low">
+                                    Low
+                                </option>
+
+                                <option value="normal">
+                                    Normal
+                                </option>
+
+                                <option value="high">
+                                    High
+                                </option>
+
+                                <option value="critical">
+                                    Critical
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div id="historyContainer" class="history-container"></div>
+
+
+                    </section>
+
+                </section>
+
+
+                <!-- =================================================
+                 07 — ROI & IMPACT
+            ================================================== -->
+
+                <section class="tab-panel" data-tab-panel="roi">
+                    <div class="roi-header">
+                        <div>
+                            <span class="roi-eyebrow">VIGIL · IMPACT ANALYTICS</span>
+                            <h2>ROI & Impact</h2>
+                            <p>
+                                Operational impact of weather-aware dynamic perimeter calibration.
+                            </p>
+                        </div>
+
+                        <div class="roi-status" id="roi-status">
+                            Simulation Connected
+                        </div>
+                    </div>
+                    <!-- IMPACT SUMMARY -->
+                    <div class="roi-section">
+                        <div class="section-heading">
+                            <span>Impact Summary</span>
+                            <small>Simulation-based operational metrics</small>
+                        </div>
+
+                        <div class="roi-metrics">
+
+                            <div class="roi-metric-card">
+                                <span class="roi-metric-label">Simulation Records</span>
+                                <strong id="roi-sample-size">—</strong>
+                                <small>Historical readings evaluated</small>
+                            </div>
+
+                            <div class="roi-metric-card">
+                                <span class="roi-metric-label">Static Policy Alarms</span>
+                                <strong id="roi-static-alarms">—</strong>
+                                <small>Fixed high-sensitivity policy</small>
+                            </div>
+
+                            <div class="roi-metric-card">
+                                <span class="roi-metric-label">VIGIL Dynamic Alarms</span>
+                                <strong id="roi-dynamic-alarms">—</strong>
+                                <small>Weather-aware recommendation</small>
+                            </div>
+
+                            <div class="roi-metric-card roi-highlight">
+                                <span class="roi-metric-label">Estimated Reduction</span>
+                                <strong id="roi-reduction">—%</strong>
+                                <small>Estimated false-alarm reduction</small>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- POLICY COMPARISON -->
+                    <div class="roi-section">
+                        <div class="section-heading">
+                            <span>Policy Comparison</span>
+                            <small>Static baseline vs VIGIL dynamic policy</small>
+                        </div>
+
+                        <div class="roi-comparison">
+
+                            <div class="comparison-row">
+                                <div class="comparison-info">
+                                    <span>Static High-Sensitivity Policy</span>
+                                    <strong id="compare-static">—</strong>
+                                </div>
+
+                                <div class="comparison-track">
+                                    <div class="comparison-bar static" id="static-bar"></div>
+                                </div>
+                            </div>
+
+                            <div class="comparison-row">
+                                <div class="comparison-info">
+                                    <span>VIGIL Dynamic Recommendation</span>
+                                    <strong id="compare-dynamic">—</strong>
+                                </div>
+
+                                <div class="comparison-track">
+                                    <div class="comparison-bar dynamic" id="dynamic-bar"></div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="impact-result">
+                            <span>Estimated False-Alarm Reduction</span>
+                            <strong id="impact-reduction">—%</strong>
+                        </div>
+                    </div> <!-- METHODOLOGY -->
+                    <div class="roi-section">
+                        <div class="section-heading">
+                            <span>Impact Methodology</span>
+                            <small>How the simulation is interpreted</small>
+                        </div>
+
+                        <div class="roi-methodology">
+
+                            <div class="method-card">
+                                <span class="method-number">01</span>
+                                <h3>Historical Readings</h3>
+                                <p>
+                                    Recorded weather and decision data are used as the
+                                    simulation sample.
+                                </p>
+                            </div>
+
+                            <div class="method-card">
+                                <span class="method-number">02</span>
+                                <h3>Static Baseline</h3>
+                                <p>
+                                    A fixed high-sensitivity perimeter policy is used as
+                                    the comparison baseline.
+                                </p>
+                            </div>
+
+                            <div class="method-card">
+                                <span class="method-number">03</span>
+                                <h3>Dynamic Recommendation</h3>
+                                <p>
+                                    VIGIL recommendations adapt sensitivity according to
+                                    environmental conditions and risk.
+                                </p>
+                            </div>
+
+                            <div class="method-card">
+                                <span class="method-number">04</span>
+                                <h3>Impact Estimate</h3>
+                                <p>
+                                    The difference between the two simulated policies is
+                                    converted into an estimated false-alarm reduction.
+                                </p>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- FORMULA -->
+                    <div class="roi-section">
+                        <div class="roi-formula-card">
+
+                            <div>
+                                <span class="roi-eyebrow">CALCULATION</span>
+                                <h3>Estimated False-Alarm Reduction</h3>
+                            </div>
+
+                            <div class="formula">
+                                <span>
+                                    (Static Alarms − Dynamic Alarms)
+                                </span>
+
+                                <span class="formula-divider">÷</span>
+
+                                <span>
+                                    Static Alarms
+                                </span>
+
+                                <span class="formula-divider">×</span>
+
+                                <span>100</span>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- LIMITATION -->
+                    <div class="roi-notice">
+                        <strong>Interpretation Note</strong>
+
+                        <p>
+                            The current VIGIL backend provides an estimated operational
+                            impact based on simulation data. Financial savings, manpower
+                            savings, maintenance costs and payback period are not currently
+                            calculated by the system.
+                        </p>
+                    </div>
+
+                    <div class="roi-footer">
+                        <span id="roi-updated">Waiting for simulation data...</span>
+                    </div>
+
+
+                </section>
+
+            </div>
+
+        </main>
+
+    </div>
+
+
+    <!-- =========================================================
+     TOOLTIP
+========================================================== -->
+
+    <div id="infoTooltip" class="info-tooltip">
+        <div class="info-tooltip-title"></div>
+        <div class="info-tooltip-body"></div>
+    </div>
+
+
+    <script src="dashboard.js"></script>
+
+</body>
+
+</html>
